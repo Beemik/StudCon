@@ -11,5 +11,9 @@
     <string name="action_previous">Previous</string>
     <string name="action_next">Next</string>
     <string name="action_refresh">Refresh</string>
+    <string name="about">PRACA MAGISTERSKA</string>
+    <string name="author">Autor: Maciej Manczyk</string>
+    <string name="promotor">Promotor: dr inż. Michał Maćkowski</string>
+    <string name="about_app">Aplikacja dostarczająca odpowiedni kontent w zależności od lokalizacji za pomocą BLE Estimote.</string>
 
 </resources>

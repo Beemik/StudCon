@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -24,8 +25,11 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +47,7 @@ public class ContentActivity extends Activity {
 	private int beaconCount;
 	private ConnectivityManager connectivityManager;
 	private NetworkInfo networkInfo;
+	private ProgressBar progressBar;
 
 	private Region beaconsRegion = new Region("region_id", null, null, null);
 	private BeaconManager beaconManager;
@@ -51,7 +56,7 @@ public class ContentActivity extends Activity {
 	private static final int REQUEST_ENABLE_BT = 0;
 	public static final String BEACON_URL = "http://ondraszek.ds.polsl.pl/748v0et2c1/getBeaconID.php";
 	public static final String GET_URL = "http://ondraszek.ds.polsl.pl/748v0et2c1/getUrl.php";
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,8 +66,12 @@ public class ContentActivity extends Activity {
 		categoryTextView.setText(getIntent().getExtras().getString(
 				BrowserActivity.CLICKED_CATEGORY));
 		beaconsTextView = (TextView) findViewById(R.id.beaconTextView);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+		progressBar.setMax(100);
+		progressBar.setVisibility(View.GONE);
 		webView = (WebView) findViewById(R.id.webView1);
-		webView.setWebViewClient(new MyBrowser());
+		webView.setWebViewClient(new MyBrowserViewClient());
+		webView.setWebChromeClient(new MyBrowserChromeClient());
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.getSettings().setBuiltInZoomControls(true);
 		webView.loadUrl(url);
@@ -214,12 +223,43 @@ public class ContentActivity extends Activity {
 		super.onDestroy();
 	}
 
-	private class MyBrowser extends WebViewClient {
+	private class MyBrowserChromeClient extends WebChromeClient {
+
+		@Override
+		public void onProgressChanged(WebView view, int newProgress) {
+			setValue(newProgress);
+		}
+
+	}
+
+	private class MyBrowserViewClient extends WebViewClient {
+
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			view.loadUrl(url);
 			return true;
 		}
+
+		@Override
+		public void onPageFinished(WebView view, String url) {
+			// TODO Auto-generated method stub
+			progressBar.setVisibility(View.GONE);
+			progressBar.setProgress(100);
+			super.onPageFinished(view, url);
+		}
+
+		@Override
+		public void onPageStarted(WebView view, String url, Bitmap favicon) {
+			// TODO Auto-generated method stub
+			progressBar.setVisibility(View.VISIBLE);
+			progressBar.setProgress(0);
+			super.onPageStarted(view, url, favicon);
+		}
+		
+	}
+
+	private void setValue(int progress) {
+		progressBar.setProgress(progress);
 	}
 
 	class GetBeaconID extends AsyncTask<String, String, String> {
@@ -345,8 +385,11 @@ public class ContentActivity extends Activity {
 					|| (!networkInfo.isAvailable()))
 				Toast.makeText(getApplicationContext(),
 						"No internet connection!", Toast.LENGTH_LONG).show();
-			if (theSameURL == false)
+			if (theSameURL == false) {
+				progressBar.setProgress(0);
+				progressBar.setVisibility(View.VISIBLE);
 				webView.loadUrl(url);
+			}
 		}
 	}
 
