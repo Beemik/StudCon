@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">StudCon</string>
+    <string name="action_about">About</string>
+    <string name="action_logout">Logout</string>
+    <string name="login_button">Login</string>
+    <string name="login">Username</string>
+    <string name="pass">Password</string>
+    <string name="content">http://www.google.com</string>
+    <string name="action_previous">Previous</string>
+    <string name="action_next">Next</string>
+    <string name="action_refresh">Refresh</string>
+
+</resources>
